@@ -7,9 +7,6 @@ class CrocDetector:
     Detector class for identifying crocodiles in images and video frames using a YOLO model.
     """
     def __init__(self):
-        """
-        Initialize the CrocDetector with the specified YOLO model and confidence threshold.
-        """
         self.logger = setup_logger(__name__)
         self.model = YOLO(MODEL_NAME)
         self.confidence_threshold = CONFIDENCE_THRESHOLD
@@ -17,8 +14,6 @@ class CrocDetector:
 
 
     def detect(self, frame):
-        """Detect crocodiles in the given image frame."""
-
         self.logger.info("Detecting crocodiles in the image frame.")
        
         results = self.model(frame, conf=self.confidence_threshold)
