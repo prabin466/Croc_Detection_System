@@ -10,6 +10,7 @@ class CrocDetector:
         self.logger = setup_logger(__name__)
         self.model = YOLO(MODEL_NAME)
         self.confidence_threshold = CONFIDENCE_THRESHOLD
+        assert 0 <= CONFIDENCE_THRESHOLD <= 1, "Confidence thresold must be between 0 and 1"
         self.logger.info("CrocDetector initialized with model: %s", MODEL_NAME)
 
 
