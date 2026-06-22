@@ -1,11 +1,8 @@
 from croc_detector.logger_config import setup_logger
-from croc_detector.frame_processor import ImageExtractor
-from croc_detector.frame_processor import VideoExtractor
-from croc_detector.detector import CrocDetector
-from croc_detector.annotator import annotator
 from croc_detector.utils import timing
-from croc_detector.config import SUPPORTED_IMAGES, SUPPORTED_VIDEOS, SNAPSHOTS_DIR
-from pathlib import Path
+from croc_detector.annotator import annotator
+from croc_detector.config import SNAPSHOTS_DIR
+from croc_detector.pipeline import process_file
 
 import cv2
 from datetime import datetime
@@ -15,25 +12,10 @@ logger = setup_logger(__name__)
 
 @timing
 def main(path):
-    ext = Path(path).suffix.lower()
+    for frame, detection in process_file(path):
+        frame = annotator(frame, detection)
 
-    if ext in SUPPORTED_IMAGES:
-        extractor = ImageExtractor()
-
-    elif ext in SUPPORTED_VIDEOS:
-        extractor = VideoExtractor()
-
-    else:
-        raise ValueError(f"Unsupported file type:{ext}")
-
-    detector = CrocDetector()
-
-    for frame in extractor.extract(path):
-        detections = detector.detect(frame)
-        if detections:
-            logger.info("Found %s detection(s) - confidence: %s", len(detections), [d['confidence'] for d in detections])
-            for detection in detections:
-                frame  = annotator(frame, detection)
+        if detection:
             filename = f"snapshot_{datetime.now().strftime('%Y%m%d_%H%M%S')}.jpg"
             snapshot_path = SNAPSHOTS_DIR / filename
             cv2.imwrite(str(snapshot_path), frame)
