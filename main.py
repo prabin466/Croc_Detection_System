@@ -12,10 +12,10 @@ logger = setup_logger(__name__)
 
 @timing
 def main(path):
-    for frame, detection in process_file(path):
-        frame = annotator(frame, detection)
+    for frame, detections in process_file(path):
+        frame = annotator(frame, detections)
 
-        if detection:
+        if detections:
             filename = f"snapshot_{datetime.now().strftime('%Y%m%d_%H%M%S')}.jpg"
             snapshot_path = SNAPSHOTS_DIR / filename
             cv2.imwrite(str(snapshot_path), frame)
