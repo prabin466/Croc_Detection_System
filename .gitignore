@@ -1,5 +1,4 @@
 venv/
-.git
 __pycache__/
 *.pyc
 .env
@@ -13,4 +12,4 @@ dataset_combined/
 runs/
 negatives_raw/
 negatives_reptiles/
-!models/croc_yolov8n.pt
+
