@@ -2,7 +2,7 @@
 
 Real-time saltwater crocodile detection in images and video, built on a fine-tuned YOLOv8 model. Upload footage through a web interface and get annotated frames showing where crocodiles are detected.
 
-![Crocodile detected in the Streamlit web interface](docs/doc1.png)
+![Crocodile detected in the Streamlit web interface](docs/doc2.png)
 
 ## Why this exists
 
@@ -61,7 +61,7 @@ python main.py path/to/your/video.mp4
 
 Processes the file frame by frame. Any frame containing a detection is saved as an annotated snapshot to the `snapshots/` directory, and a summary of detection counts is logged.
 
-![Command-line output showing detection logging](docs/doc2.png)
+![Command-line output showing detection logging](docs/doc1.png)
 
 ## Model
 
