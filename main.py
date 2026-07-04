@@ -30,5 +30,7 @@ def main(path):
 
 
 if __name__ == "__main__":
-    file_path = sys.argv[1]
-    main(file_path)
+    if len(sys.argv) < 2:
+        logger.error("Please provide a file path as an argument.")
+        sys.exit(1)
+    main(sys.argv[1])
