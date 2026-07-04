@@ -1,0 +1,4 @@
+opencv_python==4.13.0.92
+opencv_python_headless==4.13.0.92
+streamlit==1.57.0
+ultralytics==8.4.56
