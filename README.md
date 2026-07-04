@@ -105,7 +105,6 @@ Croc_Detection_System/
 ## Limitations and future work
 
 - Trained on a relatively small dataset (~700 images); performance on unseen environments, lighting, and camera angles is not yet validated.
-- `main.py` currently expects a file path argument and does not yet handle missing or invalid input gracefully.
 - No live camera / stream input yet — processing is on uploaded files only.
 - Evaluation is based on a single sample video; a larger, held-out test set would give more reliable metrics.
 
