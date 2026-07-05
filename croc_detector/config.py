@@ -11,3 +11,5 @@ CONFIDENCE_THRESHOLD = 0.5
 
 SUPPORTED_IMAGES = ['.jpg', '.jpeg', '.png']
 SUPPORTED_VIDEOS = ['.mp4', '.avi', '.mov']
+
+TARGET_CLASSES = ['crocodile']
