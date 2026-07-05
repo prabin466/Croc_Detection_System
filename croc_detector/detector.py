@@ -35,5 +35,5 @@ class CrocDetector:
                 })
                 self.logger.debug("Detection: bbox=%s, confidence=%.2f, label=%s", [x1, y1, x2, y2], confidence, label)
                 
-        self.logger.info("Found %d detection(s)", len(detections))
+        self.logger.debug("Found %d detection(s)", len(detections))
         return detections
