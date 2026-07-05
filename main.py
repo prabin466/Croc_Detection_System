@@ -24,7 +24,7 @@ def main(path):
             filename = f"snapshot_{datetime.now().strftime('%Y%m%d_%H%M%S')}.jpg"
             snapshot_path = SNAPSHOTS_DIR / filename
             cv2.imwrite(str(snapshot_path), frame)
-            logger.info("Snapshot saved: %s", snapshot_path)
+            logger.debug("Snapshot saved: %s", snapshot_path)
 
     logger.info("Processing complete. Frames with detections: %d, Total detections: %d", frames_with_detections, total_detections)
 

@@ -24,7 +24,7 @@ def process_file(path):
         detections = detector.detect(frame)
 
         if detections:
-            logger.info("Found %s detection(s) - confidence: %s", len(detections), [d['confidence'] for d in detections])
+            logger.debug("Found %s detection(s) - confidence: %s", len(detections), [d['confidence'] for d in detections])
 
         yield frame, detections
 
