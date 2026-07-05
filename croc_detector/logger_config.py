@@ -30,6 +30,11 @@ LOGGING_CONFIG = {
     },
 }
 
+_configured  = False
+
 def setup_logger(name: str) -> logging.Logger:
-    logging.config.dictConfig(LOGGING_CONFIG)
+    global _configured
+    if not _configured:
+        logging.config.dictConfig(LOGGING_CONFIG)
+        _configured = True
     return logging.getLogger(name)

@@ -16,7 +16,7 @@ class CrocDetector:
 
 
     def detect(self, frame):
-        self.logger.info("Detecting crocodiles in the image frame.")
+        self.logger.debug("Detecting crocodiles in the image frame.")
        
         results = self.model(frame, conf=self.confidence_threshold)
         detections = []
@@ -33,7 +33,7 @@ class CrocDetector:
                     "confidence": confidence,
                     "label": label
                 })
-                self.logger.info("Detection: bbox=%s, confidence=%.2f, label=%s", [x1, y1, x2, y2], confidence, label)
+                self.logger.debug("Detection: bbox=%s, confidence=%.2f, label=%s", [x1, y1, x2, y2], confidence, label)
                 
         self.logger.info("Found %d detection(s)", len(detections))
         return detections
