@@ -13,3 +13,6 @@ SUPPORTED_IMAGES = ['.jpg', '.jpeg', '.png']
 SUPPORTED_VIDEOS = ['.mp4', '.avi', '.mov']
 
 TARGET_CLASSES = ['crocodile']
+
+for directory in [LOGS_DIR, SNAPSHOTS_DIR, UPLOADS_DIR]:
+        directory.mkdir(parents=True, exist_ok=True)
