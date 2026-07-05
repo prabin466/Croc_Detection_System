@@ -1,5 +1,5 @@
 from ultralytics import YOLO
-from croc_detector.config import MODEL_NAME, CONFIDENCE_THRESHOLD
+from croc_detector.config import MODEL_NAME, CONFIDENCE_THRESHOLD, TARGET_CLASSES
 from croc_detector.logger_config import setup_logger
 
 class CrocDetector:
@@ -10,7 +10,8 @@ class CrocDetector:
         self.logger = setup_logger(__name__)
         self.model = YOLO(MODEL_NAME)
         self.confidence_threshold = CONFIDENCE_THRESHOLD
-        assert 0 <= CONFIDENCE_THRESHOLD <= 1, "Confidence thresold must be between 0 and 1"
+        self.target_classes = TARGET_CLASSES
+        assert 0 <= CONFIDENCE_THRESHOLD <= 1, "Confidence threshold must be between 0 and 1"
         self.logger.info("CrocDetector initialized with model: %s", MODEL_NAME)
 
 
@@ -21,9 +22,12 @@ class CrocDetector:
         detections = []
         for result in results:
             for box in result.boxes:
+                label = self.model.names[int(box.cls)]
+                if label not in self.target_classes:
+                    continue
                 x1, y1, x2, y2 = box.xyxy[0].tolist()
                 confidence = box.conf.item()
-                label = self.model.names[int(box.cls)]
+
                 detections.append({
                     "bbox": [x1, y1, x2, y2],
                     "confidence": confidence,
