@@ -7,17 +7,7 @@ from pathlib import Path
 logger = setup_logger(__name__)
 
 def process_file(path):
-    extn = Path(path).suffix.lower()
-
-    if extn in SUPPORTED_IMAGES:
-        extractor = ImageExtractor()
-
-    elif extn in SUPPORTED_VIDEOS:
-        extractor = VideoExtractor()
-
-    else:
-        raise ValueError("Unsupported format, please input valid format.")
-
+    extractor = get_extractor(path)
     detector = CrocDetector()
 
     for frame in extractor.extract(path):
@@ -29,3 +19,14 @@ def process_file(path):
         yield frame, detections
 
 
+def get_extractor(path):
+    extn = Path(path).suffix.lower()
+
+    if extn in SUPPORTED_IMAGES:
+        return ImageExtractor()
+
+    elif extn in SUPPORTED_VIDEOS:
+        return VideoExtractor()
+
+    else:
+        raise ValueError("Unsupported format, please input valid format.")
