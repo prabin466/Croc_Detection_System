@@ -2,13 +2,14 @@ import threading
 import time
 import cv2
 from enum import Enum
+from abc import ABC, abstractmethod
 from croc_detector.logger_config import setup_logger
 
 STREAM_TIMEOUT_SECONDS = 5.0
 RECONNECT_BACKOFF_INITIAL = 1.0
 RECONNECT_BACKOFF_MAX = 10.0
 
-from abc import ABC, abstractmethod
+
 
 class BaseExtractor(ABC):
     """
