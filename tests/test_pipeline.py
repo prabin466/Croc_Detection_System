@@ -1,6 +1,6 @@
 import pytest
 from croc_detector.pipeline import get_extractor
-from croc_detector.frame_processor import ImageExtractor, VideoExtractor
+from croc_detector.frame_processor import ImageExtractor, VideoExtractor, StreamExtractor
 
 
 def test_video_extension():
@@ -19,4 +19,7 @@ def test_unsupported_extension():
 
     with pytest.raises(ValueError):
         get_extractor("document.docx")
+
+def test_get_extractor_returns_stream_extractor_for_rtsp():
+    assert isinstance(get_extractor("rtsp://localhost:8554/croc"), StreamExtractor)
 
