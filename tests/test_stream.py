@@ -1,5 +1,4 @@
 import threading
-import time
 
 from croc_detector.frame_processor import StreamExtractor
 from unittest.mock import patch, MagicMock

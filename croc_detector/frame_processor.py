@@ -1,8 +1,8 @@
-from enum import Enum
 import threading
 import time
-from croc_detector.logger_config import setup_logger
 import cv2
+from enum import Enum
+from croc_detector.logger_config import setup_logger
 
 STREAM_TIMEOUT_SECONDS = 5.0
 RECONNECT_BACKOFF_INITIAL = 1.0
