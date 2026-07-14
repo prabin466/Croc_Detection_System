@@ -1,8 +1,12 @@
+from enum import Enum
 import threading
 import time
 from croc_detector.logger_config import setup_logger
 import cv2
 
+STREAM_TIMEOUT_SECONDS = 5.0
+RECONNECT_BACKOFF_INITIAL = 1.0
+RECONNECT_BACKOFF_MAX = 10.0
 
 from abc import ABC, abstractmethod
 
@@ -63,6 +67,13 @@ class VideoExtractor(BaseExtractor):
                 self.logger.info("Video capture released for path: %s", path)
 
 
+
+class StreamState(Enum):
+    STOPPED = "stopped"
+    CONNECTED = "connected"
+    RECONNECTING = "reconnecting"
+
+
 class StreamExtractor(BaseExtractor):
 
     def __init__(self):
@@ -73,17 +84,29 @@ class StreamExtractor(BaseExtractor):
         self.thread = None
         self.cap = None
         self.frame_id = 0
+        self.state = StreamState.STOPPED
+        self.path = None
+        self.stop_event = threading.Event()
 
     def _read_loop(self, cap):
+        last_success = time.time()
         while self.running:
             ret, frame = cap.read()
-            if not ret:
-                self.logger.warning("Failed to read frame from stream")
-                time.sleep(0.1)
+            if ret:
+                with self.lock:
+                    self.latest_frame = frame
+                    self.frame_id += 1
+                last_success = time.time()
+                self.state = StreamState.CONNECTED
                 continue
-            with self.lock:
-                self.latest_frame = frame
-                self.frame_id += 1
+
+            if time.time() - last_success > STREAM_TIMEOUT_SECONDS:
+                cap = self._reconnect(self.path)
+                if cap is None:
+                    return
+                last_success = time.time()
+                continue
+            time.sleep(0.1)
 
     def get_latest_frame(self):
         with self.lock:
@@ -95,19 +118,23 @@ class StreamExtractor(BaseExtractor):
         with self.lock:
             return self.frame_id
 
-    def start_stream(self, source):
-        self.cap = cv2.VideoCapture(source)
+    def start_stream(self, path):
+        self.path = path
+        self.cap = cv2.VideoCapture(path)
         if not self.cap.isOpened():
-            self.logger.error("Failed to open stream from source: %s", source)
+            self.logger.error("Failed to open stream from path: %s", path)
             self.cap.release()
-            raise ValueError(f"Failed to open stream from source: {source}")
-        self.logger.info("Stream successfully opened from source %s", source)
+            raise ValueError(f"Failed to open stream from path: {path}")
+        self.logger.info("Stream successfully opened from path %s", path)
         self.running = True
         self.thread = threading.Thread(target=self._read_loop, args=(self.cap,), daemon=True)
+        self.stop_event.clear()
         self.thread.start()
 
     def stop_stream(self):
         self.running = False
+        self.stop_event.set()
+        self.state = StreamState.STOPPED
         if self.thread is not None:
             self.thread.join(timeout=2.0)
             self.thread = None
@@ -129,3 +156,26 @@ class StreamExtractor(BaseExtractor):
                     time.sleep(0.001)
         finally:
             self.stop_stream()
+
+
+    def _reconnect(self, path):
+        backoff = RECONNECT_BACKOFF_INITIAL
+        self.state = StreamState.RECONNECTING
+        self.logger.info("Attempting to reconnect to stream: %s", path)
+        if self.cap is not None:
+            self.cap.release()
+        while self.running:
+            self.cap = cv2.VideoCapture(path)
+            if self.cap.isOpened():
+                self.logger.info("Reconnected to stream: %s", path)
+                self.state = StreamState.CONNECTED
+                return self.cap
+            else:
+                self.logger.warning("Failed to reconnect to stream: %s, retrying...", path)
+                self.cap.release()
+                if self.stop_event.wait(backoff):
+                    self.logger.info("Stop event set, aborting reconnection attempts.")
+                    return None 
+                backoff = min(backoff * 2, RECONNECT_BACKOFF_MAX)
+
+        return None
