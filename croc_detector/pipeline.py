@@ -6,8 +6,9 @@ from pathlib import Path
 
 logger = setup_logger(__name__)
 
-def process_file(path):
-    extractor = get_extractor(path)
+def process_file(path, extractor=None):
+    if extractor is None:
+        extractor = get_extractor(path)
     detector = CrocDetector()
 
     for frame in extractor.extract(path):
