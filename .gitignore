@@ -6,7 +6,8 @@ logs/
 snapshots/
 .idea
 *.pt
-sample_data/
+sample_data/*
+!sample_data/croc_demo.mp4  
 uploads
 dataset_combined/
 runs/
