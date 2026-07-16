@@ -1,10 +1,11 @@
 import cv2
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.responses import StreamingResponse
 
 from croc_detector.frame_processor import StreamExtractor
 from croc_detector.pipeline import process_file
 from croc_detector.annotator import annotator
+from croc_detector.validation import validate_source, InvalidSourceError
 
 
 app = FastAPI()
@@ -24,5 +25,10 @@ def generate_frames(path):
 
 @app.get("/stream")
 def stream(path: str):
-    return StreamingResponse(generate_frames(path),
+    try:
+        validated_path = validate_source(path)
+    except InvalidSourceError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+    return StreamingResponse(generate_frames(validated_path),
                              media_type='multipart/x-mixed-replace; boundary=frame') 

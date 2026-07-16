@@ -1,4 +1,5 @@
 from pathlib import Path
+import os
 
 BASE_DIR = Path(__file__).parent.parent
 LOGS_DIR = BASE_DIR / 'logs'
@@ -14,5 +15,7 @@ SUPPORTED_VIDEOS = ['.mp4', '.avi', '.mov']
 
 TARGET_CLASSES = ['crocodile']
 
+ALLOWED_STREAM_SCHEMES = ('http://', 'https://', 'rtsp://', 'rtsps://')
+ALLOW_LOCAL_SOURCES = os.environ.get('ALLOW_LOCAL_SOURCES', 'false').lower() == 'true'
 for directory in [LOGS_DIR, SNAPSHOTS_DIR, UPLOADS_DIR]:
         directory.mkdir(parents=True, exist_ok=True)
