@@ -13,6 +13,10 @@ CONFIDENCE_THRESHOLD = 0.5
 SUPPORTED_IMAGES = ['.jpg', '.jpeg', '.png']
 SUPPORTED_VIDEOS = ['.mp4', '.avi', '.mov']
 
+STREAM_TIMEOUT_SECONDS = 5.0
+RECONNECT_BACKOFF_INITIAL = 1.0
+RECONNECT_BACKOFF_MAX = 10.0
+
 TARGET_CLASSES = ['crocodile']
 
 ALLOWED_STREAM_SCHEMES = ('http://', 'https://', 'rtsp://', 'rtsps://')

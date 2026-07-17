@@ -4,12 +4,7 @@ import cv2
 from enum import Enum
 from abc import ABC, abstractmethod
 from croc_detector.logger_config import setup_logger
-
-STREAM_TIMEOUT_SECONDS = 5.0
-RECONNECT_BACKOFF_INITIAL = 1.0
-RECONNECT_BACKOFF_MAX = 10.0
-
-
+from croc_detector.config import STREAM_TIMEOUT_SECONDS, RECONNECT_BACKOFF_INITIAL, RECONNECT_BACKOFF_MAX
 
 class BaseExtractor(ABC):
     """
@@ -85,9 +80,11 @@ class StreamExtractor(BaseExtractor):
         self.thread = None
         self.cap = None
         self.frame_id = 0
+        self.last_frame_time = None
         self.state = StreamState.STOPPED
         self.path = None
         self.stop_event = threading.Event()
+
 
     def _read_loop(self, cap):
         last_success = time.time()
@@ -97,6 +94,7 @@ class StreamExtractor(BaseExtractor):
                 with self.lock:
                     self.latest_frame = frame
                     self.frame_id += 1
+                    self.last_frame_time = time.time()
                 last_success = time.time()
                 self.state = StreamState.CONNECTED
                 continue

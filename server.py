@@ -1,11 +1,13 @@
 import cv2
+import time
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import StreamingResponse
 
-from croc_detector.frame_processor import StreamExtractor
+from croc_detector.frame_processor import StreamExtractor, STREAM_TIMEOUT_SECONDS
 from croc_detector.pipeline import process_file
 from croc_detector.annotator import annotator
 from croc_detector.validation import validate_source, InvalidSourceError
+from croc_detector.config import STREAM_TIMEOUT_SECONDS
 
 
 app = FastAPI()
@@ -32,3 +34,36 @@ def stream(path: str):
 
     return StreamingResponse(generate_frames(validated_path),
                              media_type='multipart/x-mixed-replace; boundary=frame') 
+
+@app.get("/health")
+def health_check():
+    return {"status": "ok"}
+
+@app.get("/stream/status")
+def stream_status():
+    frame, frame_id = extractor.get_latest_frame()
+    with extractor.lock:
+        last_frame_time = extractor.last_frame_time\
+
+    if last_frame_time is None:
+        age =  None
+    else:
+        age = time.time() - last_frame_time
+
+    if not extractor.running:
+        healthy = False
+    elif age is None:
+        healthy = False
+    elif age > STREAM_TIMEOUT_SECONDS:
+        healthy = False
+    else:
+        healthy = True
+
+    return {
+        "healthy" : healthy,
+        "running" : extractor.running,
+        "state" : extractor.state.value,
+        "frame_id" : frame_id,
+        "last_frame_age_seconds": age
+    }
+
