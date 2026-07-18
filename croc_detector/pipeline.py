@@ -1,7 +1,7 @@
 from croc_detector.logger_config import setup_logger
 from croc_detector.frame_processor import ImageExtractor, VideoExtractor, StreamExtractor
 from croc_detector.detector import CrocDetector
-from croc_detector.config import SUPPORTED_IMAGES, SUPPORTED_VIDEOS
+from croc_detector.config import SUPPORTED_IMAGES, SUPPORTED_VIDEOS, ALLOWED_STREAM_SCHEMES
 from pathlib import Path
 
 logger = setup_logger(__name__)
@@ -22,7 +22,7 @@ def process_file(path, extractor=None):
 
 def get_extractor(path):
 
-    if path.startswith(("http://", "https://", "rtsp://")):
+    if str(path).startswith(ALLOWED_STREAM_SCHEMES):
         return StreamExtractor()
     extn = Path(path).suffix.lower()
 
