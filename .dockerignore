@@ -1,0 +1,15 @@
+venv/
+__pycache__/
+*.pyc
+.git/
+dataset_combined/
+runs/
+negatives_raw/
+negatives_reptiles/
+logs/
+snapshots/
+uploads/
+tools/
+**/*.pt
+docs/
+.pytest_cache/

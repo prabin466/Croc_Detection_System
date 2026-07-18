@@ -1,0 +1,33 @@
+services:
+  mediamtx:
+    image: bluenviron/mediamtx:latest
+    ports:
+      - "8554:8554"
+
+  ffmpeg:
+    image: linuxserver/ffmpeg:latest
+    depends_on:
+      - mediamtx
+    volumes:
+      - ./sample_data:/data:ro
+    command: >
+      -re -stream_loop -1 -i /data/croc_demo.mp4
+      -c copy -f rtsp rtsp://mediamtx:8554/croc
+    restart: on-failure
+
+  api:
+    build: .
+    ports:
+      - "8000:8000"
+    depends_on:
+      - mediamtx
+    environment:
+      - ALLOW_LOCAL_SOURCES=true
+      - DEFAULT_STREAM_SOURCE=rtsp://mediamtx:8554/croc
+      - STREAMLIT_URL=http://localhost:8501
+
+  streamlit:
+    build: .
+    ports:
+      - "8501:8501"
+    command: streamlit run app.py --server.address 0.0.0.0 --server.port 8501
