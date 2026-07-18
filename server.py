@@ -1,13 +1,13 @@
 import cv2
 import time
 from fastapi import FastAPI, HTTPException
-from fastapi.responses import StreamingResponse
+from fastapi.responses import StreamingResponse, HTMLResponse
 
 from croc_detector.frame_processor import StreamExtractor, STREAM_TIMEOUT_SECONDS
 from croc_detector.pipeline import process_file
 from croc_detector.annotator import annotator
 from croc_detector.validation import validate_source, InvalidSourceError
-from croc_detector.config import STREAM_TIMEOUT_SECONDS
+from croc_detector.config import STREAM_TIMEOUT_SECONDS, STREAMLIT_URL, DEFAULT_STREAM_SOURCE
 
 
 app = FastAPI()
@@ -67,3 +67,48 @@ def stream_status():
         "last_frame_age_seconds": age
     }
 
+@app.get("/", response_class=HTMLResponse)
+def landing():
+    return f"""
+    <html>
+      <head><title>Crocodile Detection System</title></head>
+      <body>
+        <h1>Crocodile Detection System</h1>
+        <p>Choose a mode:</p>
+        <ul>
+          <li><a href="/live">Live stream</a> — monitor an RTSP or HTTP camera feed</li>
+          <li><a href="{STREAMLIT_URL}">Upload a file</a> — run detection on an image or video</li>
+        </ul>
+      </body>
+    </html>
+    """
+
+@app.get("/live", response_class=HTMLResponse)
+def live():
+    return f"""
+    <html>
+      <head><title>Live Stream</title></head>
+      <body>
+        <h1>Live stream</h1>
+        <form id="src-form">
+          <input type="text" id="path" name="path" size="50"
+                 value="{DEFAULT_STREAM_SOURCE}"
+                 placeholder="rtsp://camera-host:8554/stream">
+          <button type="submit">Start</button>
+        </form>
+
+        <img id="feed" width="800">
+
+        <p><a href="/">Back</a></p>
+
+        <script>
+          document.getElementById('src-form').addEventListener('submit', (e) => {{
+            e.preventDefault();
+            const src = document.getElementById('path').value;
+            document.getElementById('feed').src =
+              '/stream?path=' + encodeURIComponent(src);
+          }});
+        </script>
+      </body>
+    </html>
+    """

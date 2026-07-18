@@ -17,6 +17,9 @@ STREAM_TIMEOUT_SECONDS = 5.0
 RECONNECT_BACKOFF_INITIAL = 1.0
 RECONNECT_BACKOFF_MAX = 10.0
 
+STREAMLIT_URL = os.getenv("STREAMLIT_URL", "http://localhost:8501")
+DEFAULT_STREAM_SOURCE = os.environ.get('DEFAULT_STREAM_SOURCE', '')
+
 TARGET_CLASSES = ['crocodile']
 
 ALLOWED_STREAM_SCHEMES = ('http://', 'https://', 'rtsp://', 'rtsps://')
