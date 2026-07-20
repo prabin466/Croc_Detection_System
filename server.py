@@ -3,7 +3,7 @@ import time
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import StreamingResponse, HTMLResponse
 
-from croc_detector.frame_processor import StreamExtractor, STREAM_TIMEOUT_SECONDS
+from croc_detector.frame_processor import StreamExtractor
 from croc_detector.pipeline import process_file
 from croc_detector.annotator import annotator
 from croc_detector.validation import validate_source, InvalidSourceError
@@ -41,7 +41,7 @@ def health_check():
 
 @app.get("/stream/status")
 def stream_status():
-    frame, frame_id = extractor.get_latest_frame()
+    _, frame_id = extractor.get_latest_frame()
     with extractor.lock:
         last_frame_time = extractor.last_frame_time\
 
